@@ -1,22 +1,23 @@
 package handler
 
 import (
-	"log"
 	"math/rand"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/m-Chetan/go-shawty/config"
-	"github.com/m-Chetan/go-shawty/database"
-	"github.com/m-Chetan/go-shawty/internal/helpers"
-	"github.com/m-Chetan/go-shawty/internal/model"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/m-Chetan/go-shorty/config"
+	"github.com/m-Chetan/go-shorty/database"
+	"github.com/m-Chetan/go-shorty/internal/helpers"
+	"github.com/m-Chetan/go-shorty/internal/model"
 )
 
 func createShortUrl() string {
 	db := database.DB
 	var url model.Url
 	randNum := rand.Uint64()
-
 	short_url := helpers.Base62Encode(randNum)
+
+	log.Info("Search if short url already exists.")
 
 	res := db.Where("short_url=?", short_url).First(&url)
 
@@ -32,10 +33,13 @@ func ShortenUrl(c *fiber.Ctx) error {
 
 	url := new(model.Url)
 	err := c.BodyParser(url)
-	if err != nil {
-		log.Fatal(err)
+
+	if err != nil || url.Original_Url == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			fiber.Map{"error": "Enter a valid url"})
 	}
 
+	log.Info("Generate short url")
 	short_url := createShortUrl()
 
 	check_url := db.Where("original_url=?", url.Original_Url).Find(&url)
@@ -56,7 +60,7 @@ func ShortenUrl(c *fiber.Ctx) error {
 	response := model.Url{
 		ID:           url.ID,
 		Original_Url: url.Original_Url,
-		Short_Url:    config.Config("DOMAIN") + "/" + url.Short_Url,
+		Short_Url:    "localhost:" + config.Config("DOMAIN") + "/" + url.Short_Url,
 		Visits:       url.Visits,
 	}
 

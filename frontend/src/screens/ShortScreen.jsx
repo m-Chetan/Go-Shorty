@@ -1,12 +1,13 @@
 import { Button, Form, InputGroup } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
-import { useRef, useState } from "react";
-import QRCodeGenerator from "../components/QRCodeGenerator"
-import {Link} from "react-router-dom"
+import { useRef } from "react";
+// import QRCodeGenerator from "../components/QRCodeGenerator"
+import {Link, useNavigate} from "react-router-dom"
 
-const ShortScreen = ({url,handleBack}) => {
-    const [qr, setQr] = useState(false)
+const ShortScreen = ({url,shortUrl,handleBack, error}) => {
+    //const [qr, setQr] = useState(false)
     const shortUrlInput = useRef(null)
+    const navigate = useNavigate()
 
     const handleClick = () => {
         shortUrlInput.current.select()
@@ -16,9 +17,13 @@ const ShortScreen = ({url,handleBack}) => {
 
     }
 
-    const handleQR = () => {
-        setQr(true);
+    const handleRedirect = () => {
+        navigate(shortUrl)
     }
+
+    // const handleQR = () => {
+    //     setQr(true);
+    // }
 
     return(
         <FormContainer >
@@ -35,34 +40,35 @@ const ShortScreen = ({url,handleBack}) => {
 
                     <Form.Group className="mb-3">
                         <Form.Label>ShortURL</Form.Label>
+                        {error && <p style={{color: "red"}}>Error: {error}</p>}
                         <InputGroup>
                             <Form.Control
                                 ref={shortUrlInput}
                                 type="text" 
-                                placeholder="Example: https://google.com" 
-                                value="shorturl"
+                                value={shortUrl}
                                 readOnly
                             />
                             <Button onClick={handleClick}>Copy</Button>
                         </InputGroup>
                     </Form.Group> 
                     <Form.Group>
-                    <Button onClick={handleQR}>Generate QRCode</Button>
+                    {/* <Button onClick={handleQR}>Generate QRCode</Button> */}
                     <Link href="/">
-                        <Button className="mx-4" onClick={handleBack}>Shorten Another</Button>
+                        <Button  onClick={handleBack}>Shorten Another</Button>
+                        <Button className="mx-4" onClick={handleRedirect}>Redirect</Button>
                     </Link>
                     </Form.Group>
                     
                 </Form>
 
-                {qr && 
+                {/* {qr && 
                     <div className="d-grid gap-auto">
                         <div className="mx-auto">
                             <QRCodeGenerator shortUrl={shortUrlInput.current.value} />
                         </div>
                         <Button className="my-3" >Download</Button>
                     </div>
-                }
+                } */}
 
         </FormContainer>
     )

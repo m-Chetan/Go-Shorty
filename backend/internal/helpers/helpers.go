@@ -2,8 +2,6 @@ package helpers
 
 import (
 	"strings"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -13,21 +11,17 @@ const (
 
 func Base62Encode(number uint64) string {
 	var encoded strings.Builder
-	encoded.Grow(10)
+	encoded.Grow(7)
 	for ; number > 0; number = number / uint64(length) {
 		encoded.WriteByte(alphabet[number%uint64(length)])
 	}
 
-	return encoded.String()
+	result := encoded.String()
 
-}
+	runes := []rune(result)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)[:7]
 
-func GenerateHashPassword(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	return string(hash), err
-}
-
-func CompareHashPassword(hashedPassword, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	return err == nil
 }

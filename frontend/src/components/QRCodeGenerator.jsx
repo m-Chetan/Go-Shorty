@@ -1,10 +1,10 @@
-import QRCode from "react-qr-code";
+// import QRCode from "react-qr-code";
 
-const QRCodeGenerator = ({shortUrl}) => {
+// const QRCodeGenerator = ({shortUrl}) => {
 
-    return(
-        <QRCode value={shortUrl} size={200}/>
-    )
-}
+//     return(
+//         <QRCode value={shortUrl} size={200}/>
+//     )
+// }
 
-export default QRCodeGenerator;
+// export default QRCodeGenerator;
